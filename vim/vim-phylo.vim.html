@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>~/Documents/Projects/SLEEPING/Vim-phylo/vim-phylo.vim.html</title>
+<meta name="Generator" content="Vim/7.3">
+<meta name="plugin-version" content="vim7.3_v6">
+<meta name="syntax" content="vim">
+<meta name="settings" content="use_css">
+<style type="text/css">
+<!--
+pre { font-family: monospace; color: #000000; background-color: #ffffff; }
+body { font-family: monospace; color: #000000; background-color: #ffffff; }
+.Type { color: #2e8b57; font-weight: bold; }
+.Constant { color: #ff00ff; }
+.Identifier { color: #008b8b; }
+.Special { color: #6a5acd; }
+.PreProc { color: #a020f0; }
+.Statement { color: #a52a2a; font-weight: bold; }
+.Comment { color: #0000ff; }
+-->
+</style>
+</head>
+<body>
+<pre>
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Some Vim tips for working with phylo-data</span>
+<span class="Comment">&quot;&quot;</span>
+<span class="Comment">&quot;&quot; Johan Nylander &lt;jnylander@users.sourceforge.net&gt;</span>
+<span class="Comment">&quot;&quot;</span>
+<span class="Comment">&quot;&quot; 12/12/2011 10:41:41 PM</span>
+<span class="Comment">&quot;&quot;</span>
+<span class="Comment">&quot;&quot;</span>
+<span class="Comment">&quot;&quot; Note -- Some functions calls external programs/scripts.</span>
+<span class="Comment">&quot;&quot;         Comments/additions/improvements/bug fixes most welcome.</span>
+<span class="Comment">&quot;&quot;</span>
+<span class="Comment">&quot;&quot; Discalimer -- Use at your own risk, Caveat emptor!</span>
+<span class="Comment">&quot;&quot;</span>
+<span class="Comment">&quot;&quot; See also: <a href="http://www.abc.se/~nylander/vim/Align.Vim.tgz">http://www.abc.se/~nylander/vim/Align.Vim.tgz</a></span>
+<span class="Comment">&quot;&quot;           <a href="http://www.abc.se/~nylander/vim/Nexus.Vim.tgz">http://www.abc.se/~nylander/vim/Nexus.Vim.tgz</a></span>
+<span class="Comment">&quot;&quot;</span>
+
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Soft wrap line or not</span>
+<span class="Comment">&quot;&quot; Source -- ?</span>
+<span class="Statement">set</span> <span class="PreProc">wrap</span><span class="PreProc">!</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Count letters in the word under the cursor</span>
+<span class="Comment">&quot;&quot; Source -- ?</span>
+<span class="Statement">function</span> LC<span class="Special">()</span>
+  <span class="Statement">normal</span> yiW
+  <span class="Statement">echo</span> <span class="Identifier">strlen</span>(@&quot;) . <span class="Constant">&quot; characters in word&quot;</span>
+<span class="Statement">endfunction</span>
+<span class="Comment">&quot;map zz:call LC()&lt;CR&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Print the position in word under cursor </span>
+<span class="Comment">&quot;&quot; Source -- ?</span>
+<span class="Statement">function</span> PC<span class="Special">()</span>
+  <span class="Statement">normal</span> yiB
+  <span class="Statement">echo</span> <span class="Identifier">strlen</span>(@&quot;) . <span class="Constant">&quot; position in word&quot;</span>
+<span class="Statement">endfunction</span>
+<span class="Comment">&quot;map zz:call PC()&lt;CR&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Count A, C, G, and T's on a line</span>
+<span class="Comment">&quot;&quot; Source -- Alexandru Tudor Constantinescu, 12/14/2004</span>
+<span class="Comment">&quot;&quot; This function counts the AT and GC on the WHOLE line (and only one line)</span>
+<span class="Comment">&quot;&quot; It reports the AT/GC contents and the calculated Tm based on 4*GC+2*AT</span>
+<span class="Comment">&quot;&quot; PLEASE e-mail me (JN) when you have had time to modify this function to count</span>
+<span class="Comment">&quot;&quot; only the </span><span class="Constant">&quot;sequence&quot;</span><span class="Comment"> part of the line.</span>
+<span class="Statement">function</span>! Count_bases<span class="Special">()</span>
+   <span class="Statement">let</span> l:string_length <span class="Statement">=</span> <span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">&quot;.&quot;</span><span class="Special">)</span>, <span class="Special">&quot;.</span>*<span class="Constant">&quot;, &quot;</span>&amp;<span class="Constant">&quot;, &quot;</span>g&quot;<span class="Special">))</span>
+   <span class="Statement">let</span> l:a <span class="Statement">=</span> l:string_length <span class="Statement">-</span> <span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">&quot;.&quot;</span><span class="Special">)</span>, <span class="Constant">&quot;</span><span class="Constant">\\</span><span class="Constant">c[a]&quot;</span>, <span class="Constant">&quot;&quot;</span>, <span class="Constant">&quot;g&quot;</span><span class="Special">))</span>
+   <span class="Statement">let</span> l:c <span class="Statement">=</span> l:string_length <span class="Statement">-</span> <span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">&quot;.&quot;</span><span class="Special">)</span>, <span class="Constant">&quot;</span><span class="Constant">\\</span><span class="Constant">c[c]&quot;</span>, <span class="Constant">&quot;&quot;</span>, <span class="Constant">&quot;g&quot;</span><span class="Special">))</span>
+   <span class="Statement">let</span> l:g <span class="Statement">=</span> l:string_length <span class="Statement">-</span> <span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">&quot;.&quot;</span><span class="Special">)</span>, <span class="Constant">&quot;</span><span class="Constant">\\</span><span class="Constant">c[g]&quot;</span>, <span class="Constant">&quot;&quot;</span>, <span class="Constant">&quot;g&quot;</span><span class="Special">))</span>
+   <span class="Statement">let</span> l:t <span class="Statement">=</span> l:string_length <span class="Statement">-</span> <span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">&quot;.&quot;</span><span class="Special">)</span>, <span class="Constant">&quot;</span><span class="Constant">\\</span><span class="Constant">c[t]&quot;</span>, <span class="Constant">&quot;&quot;</span>, <span class="Constant">&quot;g&quot;</span><span class="Special">))</span>
+   <span class="Statement">let</span> l:gap <span class="Statement">=</span> l:string_length <span class="Statement">-</span> <span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">&quot;.&quot;</span><span class="Special">)</span>, <span class="Constant">&quot;</span><span class="Constant">\\</span><span class="Constant">c[-]&quot;</span>, <span class="Constant">&quot;&quot;</span>, <span class="Constant">&quot;g&quot;</span><span class="Special">))</span>
+   <span class="Statement">let</span> l:other <span class="Statement">=</span> l:string_length <span class="Statement">-</span> l:a <span class="Statement">-</span> l:c <span class="Statement">-</span> l:g <span class="Statement">-</span> l:t <span class="Statement">-</span> l:gap
+   <span class="Statement">echo</span> <span class="Constant">&quot;Length=&quot;</span> . l:string_length <span class="Constant">&quot; (&quot;</span> <span class="Constant">&quot;A=&quot;</span> . l:a <span class="Constant">&quot;C=&quot;</span> . l:c <span class="Constant">&quot;G=&quot;</span> . l:g <span class="Constant">&quot;T=&quot;</span> . l:t <span class="Constant">&quot;-=&quot;</span> . l:gap <span class="Constant">&quot;other=&quot;</span> . l:other <span class="Constant">&quot;)&quot;</span>
+<span class="Statement">endfunction</span>
+<span class="Comment">&quot;map ZZ :call Count_bases()&lt;CR&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Align columns based on white space by visually select a text, and then</span>
+<span class="Comment">&quot;&quot; :Align&lt;CR&gt; or press '\a'</span>
+<span class="Comment">&quot;&quot; Source -- ?</span>
+<span class="Comment">&quot;&quot; Good for align sequence labels with unequal length with the seqs.</span>
+<span class="Statement">function</span>! AlignSection<span class="Special">(</span>regex<span class="Special">)</span> range
+  <span class="Statement">let</span> extra <span class="Statement">=</span> <span class="Constant">1</span>
+  <span class="Statement">let</span> sep <span class="Statement">=</span> <span class="Identifier">empty</span><span class="Special">(</span><span class="Identifier">a:regex</span><span class="Special">)</span> ? <span class="Constant">'\s\+'</span> : <span class="Identifier">a:regex</span>
+  <span class="Statement">let</span> maxpos <span class="Statement">=</span> <span class="Constant">0</span>
+  <span class="Statement">let</span> section <span class="Statement">=</span> <span class="Identifier">getline</span><span class="Special">(</span><span class="Identifier">a:firstline</span>, <span class="Identifier">a:lastline</span><span class="Special">)</span>
+  <span class="Statement">for</span> line <span class="Statement">in</span> section
+    <span class="Statement">let</span> pos <span class="Statement">=</span> <span class="Identifier">match</span><span class="Special">(</span>line, <span class="Constant">' *'</span><span class="Statement">.</span>sep<span class="Special">)</span>
+    <span class="Statement">if</span> maxpos <span class="Statement">&lt;</span> pos
+      <span class="Statement">let</span> maxpos <span class="Statement">=</span> pos
+    <span class="Statement">endif</span>
+  <span class="Statement">endfor</span>
+  <span class="Statement">call</span> <span class="Identifier">map</span><span class="Special">(</span>section, <span class="Constant">'AlignLine(v:val, sep, maxpos, extra)'</span><span class="Special">)</span>
+  <span class="Statement">call</span> <span class="Identifier">setline</span><span class="Special">(</span><span class="Identifier">a:firstline</span>, section<span class="Special">)</span>
+<span class="Statement">endfunction</span>
+
+<span class="Statement">function</span>! AlignLine<span class="Special">(</span>line, sep, maxpos, extra<span class="Special">)</span>
+  <span class="Statement">let</span> m <span class="Statement">=</span> <span class="Identifier">matchlist</span><span class="Special">(</span><span class="Identifier">a:line</span>, <span class="Constant">'\(.\{-}\) \{-}\('</span><span class="Statement">.</span><span class="Identifier">a:sep</span><span class="Statement">.</span><span class="Constant">'.*\)'</span><span class="Special">)</span>
+  <span class="Statement">if</span> <span class="Identifier">empty</span><span class="Special">(</span>m<span class="Special">)</span>
+    <span class="Statement">return</span> <span class="Identifier">a:line</span>
+  <span class="Statement">endif</span>
+  <span class="Statement">let</span> spaces <span class="Statement">=</span> <span class="Identifier">repeat</span><span class="Special">(</span><span class="Constant">' '</span>, <span class="Identifier">a:maxpos</span> <span class="Statement">-</span> <span class="Identifier">strlen</span><span class="Special">(</span>m[<span class="Constant">1</span>]<span class="Special">)</span> <span class="Statement">+</span> <span class="Identifier">a:extra</span><span class="Special">)</span>
+  <span class="Statement">return</span> <span class="Statement">m</span>[<span class="Constant">1</span>] <span class="Statement">.</span> spaces <span class="Statement">.</span> <span class="Statement">m</span>[<span class="Constant">2</span>]
+<span class="Statement">endfunction</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=?</span> <span class="Statement">-</span><span class="PreProc">range</span> Align <span class="Special">&lt;</span><span class="Special">line1</span><span class="Special">&gt;</span>,<span class="Special">&lt;</span><span class="Special">line2</span><span class="Special">&gt;</span><span class="Identifier">call</span> AlignSection(<span class="Constant">'&lt;args&gt;'</span>)
+<span class="Statement">vnoremap</span> <span class="Special">&lt;</span><span class="Special">silent</span><span class="Special">&gt;</span> <span class="Special">&lt;</span><span class="Special">Leader</span><span class="Special">&gt;</span>a :Align<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;===========================================================================</span>
+<span class="Comment">&quot; Reverse-Complement DNA sequence</span>
+<span class="Comment">&quot; Source -- Alexandru Tudor Constantinescu,  02/14/2005</span>
+<span class="Comment">&quot;           Tim Chase and William Nater 12/12/2004 </span>
+<span class="Comment">&quot; 04/13/2010 01:09:14 PM CEST: didn't work as expected</span>
+<span class="Comment">&quot; 03/04/2011 07:01:26 PM CETT: Edited slightly, try now!</span>
+<span class="Comment">&quot; This function tries to get the reverse-complement of a certain DNA sequence</span>
+<span class="Comment">&quot; you have to select a block of text in advance</span>
+<span class="Comment">&quot; the script is crude, in that it assumes you have only ATCG</span>
+<span class="Comment">&quot; capitalization does not get screwed up</span>
+<span class="Comment">&quot; at this moment 12/07/2004, the whole LINE (i.e. not only part of line) gets</span>
+<span class="Comment">&quot; changed, irrespective of what you select.</span>
+<span class="Comment">&quot; Tim Chase and William Nater 12/12/2004 </span>
+<span class="Comment">&quot; since ignorecase gives problems (i.e. capitalization is lost)</span>
+<span class="Comment">&quot; The replacement should be done by selecting a block of text (beware that the</span>
+<span class="Comment">&quot; WHOLE line will get changed!!) and then issuing the commmand:</span>
+<span class="Comment">&quot; :RC</span>
+<span class="Statement">fun</span>! Rev<span class="Special">(</span>result<span class="Special">)</span>
+   <span class="Statement">let</span> l:i <span class="Statement">=</span> <span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">a:result</span><span class="Special">)</span> <span class="Statement">-</span> <span class="Constant">1</span>
+   <span class="Statement">let</span> l:result <span class="Statement">=</span> <span class="Constant">''</span>
+   <span class="Statement">while</span> <span class="Special">(</span>l:i <span class="Statement">&gt;</span> <span class="Statement">-</span><span class="Constant">1</span><span class="Special">)</span>
+      <span class="Statement">let</span> l:result <span class="Statement">=</span> l:result<span class="Statement">.</span><span class="Identifier">a:result</span>[l:i]
+      <span class="Statement">let</span> l:i <span class="Statement">=</span> l:i <span class="Statement">-</span> <span class="Constant">1</span>
+   <span class="Statement">endwhile</span>
+   <span class="Statement">return</span> l:result
+<span class="Statement">endfun</span>
+
+<span class="Statement">function</span>! RC_Tim<span class="Special">(</span>l1, l2<span class="Special">)</span>
+   <span class="Statement">let</span> l:str <span class="Statement">=</span> <span class="Identifier">getline</span><span class="Special">(</span><span class="Identifier">a:l1</span><span class="Special">)</span>
+   <span class="Statement">let</span> l:len <span class="Statement">=</span> <span class="Identifier">strlen</span><span class="Special">(</span>l:str<span class="Special">)</span>
+   <span class="Statement">let</span> l:ignorecs <span class="Statement">=</span> &amp;l:ic
+   <span class="Statement">let</span> &amp;l:ic <span class="Statement">=</span> <span class="Constant">0</span>
+   <span class="Statement">exe</span> <span class="Identifier">a:l1</span><span class="Statement">.</span><span class="Constant">&quot;,&quot;</span><span class="Statement">.</span><span class="Identifier">a:l2</span><span class="Statement">.</span><span class="Constant">&quot;j!&quot;</span>
+   <span class="Statement">exe</span> <span class="Identifier">a:l1</span><span class="Statement">.</span><span class="Constant">&quot;s/.*/</span><span class="Constant">\\</span><span class="Constant">=Rev(submatch(0))/&quot;</span>
+   <span class="Statement">exe</span> <span class="Identifier">a:l1</span><span class="Statement">.</span><span class="Constant">&quot;s/</span><span class="Constant">\\</span><span class="Constant">c[agct]/</span><span class="Constant">\\</span><span class="Constant">=\&quot;ATGCatgc\&quot;[match(\&quot;TACGtacg\&quot;, submatch(0))]/ge&quot;</span>
+   <span class="Statement">exe</span> <span class="Identifier">a:l1</span><span class="Statement">.</span><span class="Constant">&quot;s/.</span><span class="Constant">\\</span><span class="Constant">{&quot;</span><span class="Statement">.</span>&amp;tw<span class="Statement">.</span><span class="Constant">&quot;</span><span class="Constant">\\</span><span class="Constant">}</span><span class="Constant">\\</span><span class="Constant">zs//g&quot;</span>
+   <span class="Statement">let</span> &amp;l:ic <span class="Statement">=</span> l:ignorecs
+<span class="Statement">endfunction</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">n</span><span class="Statement">=</span><span class="Type">*</span> <span class="Statement">-</span><span class="PreProc">range</span> RC <span class="Statement">:</span>call RC_Tim(<span class="Special">&lt;</span><span class="Special">line1</span><span class="Special">&gt;</span>,<span class="Special">&lt;</span><span class="Special">line2</span><span class="Special">&gt;</span>)
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Nexus-Comment/uncomment</span>
+<span class="Comment">&quot;&quot; Source -- Modified by JN from vim.org/tips</span>
+<span class="Comment">&quot;&quot; Comments/uncomments line by line!</span>
+<span class="Statement">function</span>! NexusComment<span class="Special">()</span>
+    <span class="Statement">if</span> <span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">&quot;.&quot;</span><span class="Special">)</span> <span class="Statement">=~</span> <span class="Constant">'['</span>
+        <span class="Statement">let</span> hls<span class="Statement">=</span>@/
+<span class="Statement">        s</span><span class="Special">/</span>^<span class="Special">\(</span>\s*<span class="Special">\)</span>\[<span class="Special">/</span><span class="Special">\1</span><span class="Special">/</span>
+<span class="Statement">        s</span><span class="Special">/</span><span class="Special">\(</span>\s*<span class="Special">\)</span>\]$<span class="Special">/</span><span class="Special">\1</span><span class="Special">/</span>
+        <span class="Statement">let</span> @/<span class="Statement">=</span>hls
+    <span class="Statement">else</span>
+        <span class="Statement">let</span> hls<span class="Statement">=</span>@/
+<span class="Statement">        s</span><span class="Special">/</span>^<span class="Special">/</span>[<span class="Special">/</span>
+<span class="Statement">        s</span><span class="Special">/</span>$<span class="Special">/</span>]<span class="Special">/</span>
+        <span class="Statement">let</span> @/<span class="Statement">=</span>hls
+    <span class="Statement">endif</span>
+<span class="Statement">endfunction</span>
+<span class="Comment">&quot;map ,[ :call NexusComment()&lt;CR&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Count the number of '&gt;' in fasta file</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">function</span>! GetNtax<span class="Special">()</span>
+    <span class="Statement">let</span> ntax<span class="Statement">=</span><span class="Constant">0</span>
+    g/^/<span class="Statement">let</span> ntax<span class="Statement">+=</span><span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">'.'</span><span class="Special">)</span>, <span class="Constant">'[^&gt;]'</span>, <span class="Constant">''</span>, <span class="Constant">'g'</span><span class="Special">))</span>
+    <span class="Statement">return</span> ntax
+<span class="Statement">endfunction</span>
+
+<span class="Statement">function</span>! GetNtax2<span class="Special">()</span>
+    <span class="Statement">exe</span> <span class="Constant">': normal G'</span>
+    <span class="Statement">let</span> ntax<span class="Statement">=</span><span class="Constant">0</span>
+    g/^/<span class="Statement">let</span> ntax<span class="Statement">+=</span><span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span><span class="Constant">'.'</span><span class="Special">)</span>, <span class="Constant">'[^&gt;]'</span>, <span class="Constant">''</span>, <span class="Constant">'g'</span><span class="Special">))</span>
+    <span class="Statement">echo</span> <span class="Constant">&quot;Number of sequences: &quot;</span> ntax
+<span class="Statement">endfunction</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Remove gaps in Fasta</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">function</span>! DegapFasta<span class="Special">()</span>
+    <span class="Statement">exe</span> <span class="Constant">':g!/^&gt;/s/-//g'</span>
+    <span class="Statement">exe</span> <span class="Constant">':g/^\s*$/d'</span>
+    <span class="Statement">exe</span> <span class="Constant">':normal gg'</span>
+<span class="Statement">endfunction</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Count the length of longest line in file (not counting white space)</span>
+<span class="Comment">&quot;&quot; Source -- JN from Tim Chase-2, 2007</span>
+<span class="Statement">function</span>! GetMaxLineLength<span class="Special">()</span>
+    <span class="Statement">let</span> maxLength<span class="Statement">=</span><span class="Constant">0</span>
+    <span class="Statement">let</span> start<span class="Statement">=</span><span class="Identifier">line</span><span class="Special">(</span><span class="Constant">&quot;1&quot;</span><span class="Special">)</span>
+    <span class="Statement">let</span> end<span class="Statement">=</span><span class="Identifier">line</span><span class="Special">(</span><span class="Constant">&quot;$&quot;</span><span class="Special">)</span>
+    <span class="Statement">while</span> <span class="Special">(</span>start <span class="Statement">&lt;=</span> end<span class="Special">)</span>
+        <span class="Statement">let</span> lineLength<span class="Statement">=</span><span class="Identifier">strlen</span><span class="Special">(</span><span class="Identifier">substitute</span><span class="Special">(</span><span class="Identifier">getline</span><span class="Special">(</span>start<span class="Special">)</span>, <span class="Constant">'\s'</span>, <span class="Constant">''</span>, <span class="Constant">''</span><span class="Special">))</span>
+        <span class="Statement">if</span> <span class="Special">(</span>lineLength <span class="Statement">&gt;</span> maxLength<span class="Special">)</span>
+            <span class="Statement">let</span> maxLength<span class="Statement">=</span>lineLength
+        <span class="Statement">endif</span>
+        <span class="Statement">let</span> start <span class="Statement">=</span> <span class="Statement">start</span> <span class="Statement">+</span> <span class="Constant">1</span>
+    <span class="Statement">endwhile</span>
+<span class="Comment">    &quot;echo </span><span class="Constant">&quot;max line length: &quot;</span><span class="Comment"> maxLength</span>
+    <span class="Statement">return</span> maxLength
+<span class="Statement">endfunction</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; FASTA interleaved to Phyml converter.</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">function</span>! Fasta2Phyml<span class="Special">()</span>
+    <span class="Statement">let</span> ntax<span class="Statement">=</span>GetNtax<span class="Special">()</span>
+    <span class="Statement">exe</span> <span class="Constant">':normal gg'</span>
+    <span class="Statement">exe</span> <span class="Constant">':s/&gt;/\r&gt;/'</span>
+    <span class="Statement">exe</span> <span class="Constant">':%s/\(^&gt;.\+\)$/\1&lt;skojj/'</span>
+    <span class="Statement">exe</span> <span class="Constant">':%s/\n//g'</span>
+    <span class="Statement">exe</span> <span class="Constant">':%s/&gt;/\r/g'</span>
+    <span class="Statement">exe</span> <span class="Constant">':%s/&lt;skojj/&lt;skojj\r/'</span>
+    <span class="Statement">let</span> nchar<span class="Statement">=</span>GetMaxLineLength<span class="Special">()</span>
+    <span class="Statement">exe</span> <span class="Constant">':%s/&lt;skojj\n/\t/'</span>
+    <span class="Statement">exe</span> <span class="Constant">':normal gg'</span>
+    <span class="Statement">exe</span> <span class="Constant">':%Align'</span>
+    <span class="Statement">exe</span> <span class="Constant">':normal gg'</span>
+    <span class="Statement">exe</span> <span class="Constant">&quot;normal i&quot;</span> ntax nchar <span class="Constant">&quot;\&lt;Esc&gt;&quot;</span>
+<span class="Comment">    &quot;echo &quot;</span><span class="PreProc">Ntax:</span><span class="Comment"> &quot; ntax &quot;</span><span class="PreProc">Nchar:</span><span class="Comment"> &quot; nchar </span>
+<span class="Statement">endfunction</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Convert interleaved FASTA to non-interleaved FASTA</span>
+<span class="Comment">&quot;&quot; Warning: does not work well on larger files!</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> Fasta2NonInterLeavedFasta <span class="Statement">:</span>normal gg | <span class="Statement">:</span>s/&gt;/\r&gt;/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/\(^&gt;.\+\)$/\1&lt;skojj/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/\n//g<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/&gt;/\r&gt;/g<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/&lt;skojj/\r/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>normal ggdd<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> UnWrapFasta <span class="Statement">:</span>normal gg | <span class="Statement">:</span>Fasta2NonInterLeavedFasta<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Convert sequential PHYML file format to sequential FASTA file format</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> Phyml2Fasta <span class="Statement">:</span>normal ggdd | <span class="Statement">:</span>%s/^/&gt;/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/\s\+/\r/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Convert FASTA (interleaved) file format to PHYML (sequential) file format</span>
+<span class="Comment">&quot;&quot; Warning: does not work well on larger files!</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> Fasta2Phyml2 <span class="Statement">:</span>normal gg | <span class="Statement">:</span>s/&gt;/\r&gt;/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/\(^&gt;.\+\)$/\1&lt;skojj/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/\n//g<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/&gt;/\r/g<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/&lt;skojj/\t/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>normal gg<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Convert FASTA (non-interleaved) file format to FASTA (interleaved) file format</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> WrapFasta <span class="Statement">:</span>normal gg | <span class="Statement">:</span>g!/^&gt;/s/.\{70}/&amp;\r/g<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>normal gg<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Convert FASTA file format to sequential PHYML file format</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Comment">&quot;command! -nargs=0 Fasta2Phyml :normal gg | :%s/^/&gt;/&lt;CR&gt; | :%s/\s\+/\r/&lt;CR&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; FASTA to NEXUS using external program</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> Fas2Nex <span class="Statement">:</span>%! fas2nex<span class="Statement">.</span>stdout <span class="Identifier">%</span><span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; FASTA to TAB delimited</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> Fasta2Tab <span class="Statement">:</span>normal gg | <span class="Statement">:</span>%s/^&gt;\(.*\)/&gt;\1\t/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/\n//<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>%s/&gt;/\r/g<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span> | <span class="Statement">:</span>g/^$/d<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; TAB to FASTA</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">0</span> Tab2Fasta <span class="Statement">:</span>normal gg | <span class="Statement">:</span>%s/^\(.*\)\t\(.*\)/&gt;\1\r\2/<span class="Special">&lt;</span><span class="Special">CR</span><span class="Special">&gt;</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Insert random sequence using external Perl-script</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Statement">function</span>! RandSeq<span class="Special">(</span>len<span class="Special">)</span>
+    <span class="Statement">let</span> LENGTH <span class="Statement">=</span> <span class="Identifier">a:len</span>
+    <span class="Statement">exe</span> <span class="Constant">':r!/home/nylander/bin/getrandomsequence.pl'</span> <span class="Statement">.</span> <span class="Constant">' '</span> <span class="Statement">.</span> LENGTH
+<span class="Statement">endfunction</span>
+<span class="Statement">command</span>! <span class="Statement">-</span><span class="PreProc">nargs</span><span class="Statement">=</span><span class="Type">1</span> Randseq <span class="Statement">:</span> <span class="Identifier">call</span> RandSeq(<span class="Special">&lt;</span><span class="Special">args</span><span class="Special">&gt;</span>)
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Function to read Man page</span>
+<span class="Comment">&quot;&quot; Source -- Edited by JN from <a href="http://vim.wikia.com/wiki/">http://vim.wikia.com/wiki/</a></span>
+<span class="Comment">&quot;&quot;           Open_a_window_with_the_man_page_for_the_word_under_the_cursor</span>
+<span class="Statement">function</span>! ReadMan<span class="Special">(</span>man_word<span class="Special">)</span>
+    <span class="Statement">exe</span> <span class="Constant">':tabnew'</span>
+    <span class="Statement">exe</span> <span class="Constant">':r!man '</span> <span class="Statement">.</span> <span class="Identifier">a:man_word</span> <span class="Statement">.</span> <span class="Constant">' | col -b'</span>
+    <span class="Statement">exe</span> <span class="Constant">':goto'</span>
+    <span class="Statement">exe</span> <span class="Constant">':delete'</span>
+    <span class="Statement">exe</span> <span class="Constant">':set filetype=man'</span>
+<span class="Statement">endfunction</span>
+
+
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; My Phylo Menu (very experimental!) Uses a number of external programs</span>
+<span class="Comment">&quot;&quot; Source -- JN</span>
+<span class="Comment">&quot;&quot;===========================================================================</span>
+<span class="Comment">&quot;&quot; Run Alignment programs</span>
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.CLUSTALW.Protein</span> :! clustalw -outorder=INPUT -output=GDE -case=UPPER -outfile=ClUsTaL.aln -align -infile=%&lt;CR&gt;: <span class="Statement">tabe</span> ClUsTaL.aln&lt;CR&gt; :% s/%/&gt;/&lt;CR&gt;: normal gg&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.CLUSTALW.DNA</span>     :! clustalw -outorder=INPUT -output=GDE -case=UPPER -outfile=ClUsTaL.aln -align -infile=%&lt;CR&gt;: <span class="Statement">tabe</span> ClUsTaL.aln&lt;CR&gt; :% s/#/&gt;/&lt;CR&gt;: normal gg&lt;CR&gt;
+<span class="Comment">&quot;menu Phylo.Do\ Alignment.CLUSTALW.-Sep-       :</span>
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.CLUSTALW.Read</span><span class="PreProc">\ </span><span class="PreProc">CLUSTALW</span><span class="PreProc">\ </span><span class="PreProc">man</span><span class="PreProc">\ </span><span class="PreProc">page</span> : <span class="Statement">call</span> ReadMan(<span class="Constant">'clustalw'</span>)&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.mafft</span>       :! mafft  % &gt; MaFfT.mafft.ali&lt;CR&gt; : <span class="Statement">tabe</span>  MaFfT.mafft.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.linsi</span>       :! linsi  % &gt; MaFfT.linsi.ali&lt;CR&gt; : <span class="Statement">tabe</span>  MaFfT.linsi.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.ginsi</span>       :! ginsi  % &gt; MaFfT.ginsi.ali&lt;CR&gt; : <span class="Statement">tabe</span>  MaFfT.ginsi.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.einsi</span>       :! einsi  % &gt; MaFfT.einsi.ali&lt;CR&gt; : <span class="Statement">tabe</span>  MaFfT.einsi.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.fftnsi</span>      :! fftnsi % &gt; MaFfT.fftnsi.ali&lt;CR&gt;: <span class="Statement">tabe</span>  MaFfT.fftnsi.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.fftns</span>       :! fftns  % &gt; MaFfT.fftns.ali&lt;CR&gt; : <span class="Statement">tabe</span>  MaFfT.fftns.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.nwns</span>        :! nwns   % &gt; MaFfT.nwns.ali&lt;CR&gt;  : <span class="Statement">tabe</span>  MaFfT.nwns.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.nwnsi</span>       :! nwnsi  % &gt; MaFfT.nwnsi.ali&lt;CR&gt; : <span class="Statement">tabe</span>  MaFfT.nwnsi.ali&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.-Sep-</span>       :
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Do</span><span class="PreProc">\ </span><span class="PreProc">Alignment.MAFFT.Read</span><span class="PreProc">\ </span><span class="PreProc">MAFFT</span><span class="PreProc">\ </span><span class="PreProc">man</span><span class="PreProc">\ </span><span class="PreProc">page</span> : <span class="Statement">call</span> ReadMan(<span class="Constant">'mafft'</span>)&lt;CR&gt;
+
+<span class="Comment">&quot;&quot; Edit alignments</span>
+<span class="Comment">&quot;menu Phylo.Edit.-Sep-  :</span>
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Utilities.Remove</span><span class="PreProc">\ </span><span class="PreProc">all</span><span class="PreProc">\ </span><span class="PreProc">gaps</span><span class="PreProc">\ </span><span class="PreProc">in</span><span class="PreProc">\ </span><span class="PreProc">FASTA</span>          : <span class="Statement">call</span> DegapFasta()&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Utilities.Align</span><span class="PreProc">\ </span><span class="PreProc">taxlabels</span><span class="PreProc">\ </span><span class="PreProc">(in</span><span class="PreProc">\ </span><span class="PreProc">phyml</span><span class="PreProc">\ </span><span class="PreProc">format)</span> : Align&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Utilities.Count</span><span class="PreProc">\ </span><span class="PreProc">sequences</span><span class="PreProc">\ </span><span class="PreProc">(in</span><span class="PreProc">\ </span><span class="PreProc">FASTA</span><span class="PreProc">\ </span><span class="PreProc">format)</span> : echo <span class="Constant">''</span>&lt;CR&gt;: <span class="Statement">call</span> GetNtax2()&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Utilities.Set</span><span class="PreProc">\ </span><span class="PreProc">filetype</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">DNA</span>                : <span class="Statement">set</span> ft=align&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Utilities.Set</span><span class="PreProc">\ </span><span class="PreProc">filetype</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">AA</span>                 : <span class="Statement">set</span> ft=aalign&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Utilities.Set</span><span class="PreProc">\ </span><span class="PreProc">filetype</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">Nexus</span>              : <span class="Statement">set</span> ft=nexus&lt;CR&gt;
+
+<span class="Comment">&quot;&quot; Format conversions</span>
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Convert.Phyml</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">FASTA</span> : Phyml2Fasta&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Convert.FASTA</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">Phyml</span> : <span class="Statement">call</span> Fasta2Phyml()&lt;CR&gt;&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Convert.FASTA</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">Nexus</span> : Fas2Nex&lt;CR&gt; : <span class="Statement">set</span> ft=nexus&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Convert.FASTA</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">Tab</span>   : Fasta2Tab&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Convert.Tab</span><span class="PreProc">\ </span><span class="PreProc">to</span><span class="PreProc">\ </span><span class="PreProc">FASTA</span>   : Tab2Fasta&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Convert.Unwrap</span><span class="PreProc">\ </span><span class="PreProc">FASTA</span>    : Fasta2NonInterLeavedFasta&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Convert.Wrap</span><span class="PreProc">\ </span><span class="PreProc">FASTA</span>      : WrapFasta&lt;CR&gt;
+
+<span class="Comment">&quot;&quot; DNA</span>
+<span class="Statement">menu</span> <span class="PreProc">Phylo.DNA.RevComp</span>                  : RC&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.DNA.Insert</span><span class="PreProc">\ </span><span class="PreProc">Random</span><span class="PreProc">\ </span><span class="PreProc">DNA</span><span class="PreProc">\ </span><span class="PreProc">Seq</span> : Randseq
+
+<span class="Comment">&quot;&quot; Run external programs</span>
+<span class="Comment">&quot;&quot;</span> <span class="PreProc">TODO:</span><span class="Comment"> need to capture the output from fasttree in a new buffer instead of having</span>
+<span class="Comment">&quot;&quot; to hardcode the output name</span>
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.Fasttree</span><span class="PreProc">\ </span><span class="PreProc">(DNA)</span>          : ! fasttree -nt % &gt; FaSt.<span class="Statement">tre</span>&lt;CR&gt;&lt;CR&gt;: <span class="Statement">tabe</span> FaSt.<span class="Statement">tre</span>&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.Fasttree</span><span class="PreProc">\ </span><span class="PreProc">(AA)</span>           : ! fasttree  % &gt; FaSt.<span class="Statement">tre</span>&lt;CR&gt;&lt;CR&gt;: <span class="Statement">tabe</span> FaSt.<span class="Statement">tre</span>&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.PAUP</span>                     : ! paup %&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.MrBayes</span>                  : ! mb312 -i %&lt;CR&gt;
+<span class="Comment">&quot;menu Phylo.Phylo.Run\ Phyml :</span>
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.MrAIC</span><span class="PreProc">\ </span><span class="PreProc">(24</span><span class="PreProc">\ </span><span class="PreProc">nt</span><span class="PreProc">\ </span><span class="PreProc">models)</span>  : ! mraic.pl %&lt;CR&gt;&lt;CR&gt;: <span class="Statement">tabe</span> *.MrAIC.txt&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.MrAIC</span><span class="PreProc">\ </span><span class="PreProc">(56</span><span class="PreProc">\ </span><span class="PreProc">nt</span><span class="PreProc">\ </span><span class="PreProc">models)</span>  : ! mraic.pl -modeltest %&lt;CR&gt;&lt;CR&gt;: <span class="Statement">tabe</span> *.MrAIC.txt&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.pMrAIC</span><span class="PreProc">\ </span><span class="PreProc">(24</span><span class="PreProc">\ </span><span class="PreProc">nt</span><span class="PreProc">\ </span><span class="PreProc">models)</span> : ! pmraic.pl --noverbose %&lt;CR&gt;&lt;CR&gt;: <span class="Statement">tabe</span> *.pMrAIC.txt&lt;CR&gt;
+<span class="Statement">menu</span> <span class="PreProc">Phylo.Run.pMrAIC</span><span class="PreProc">\ </span><span class="PreProc">(56</span><span class="PreProc">\ </span><span class="PreProc">nt</span><span class="PreProc">\ </span><span class="PreProc">models)</span> : ! pmraic.pl --noverbose --modeltest %&lt;CR&gt;&lt;CR&gt;: <span class="Statement">tabe</span> *.pMrAIC.txt&lt;CR&gt;
+
+
+
+</pre>
+</body>
+</html>
