@@ -35,7 +35,7 @@ Source: www.reptile-database.org 2018 (and more).
 |&#9724;| *Vipera ammodytes meridionalis*          | BOULENGER, 1903                                                      |                                              |
 |&#9724;| *Vipera ammodytes montandoni*            | BOULENGER, 1904                                                      |                                              |
 |&#9724;| *Vipera ammodytes ruffoi*                | BRUNO, 1968                                                          | Not a taxon (REF)                            |
-|&#9723;| *Vipera anatolica*                       | EISELT &amp; BARAN, 1970                                             |                                              |
+|&#9723;| *Vipera anatolica anatolica*             | EISELT &amp; BARAN, 1970                                             |                                              |
 |&#9723;| *Vipera anatolica senliki*               | G&Ouml;CMEN, MEBERT, KARI&#350;, O&#286;UZ &amp; URSENBACHER, 2017   |                                              |
 |&#9724;| *Vipera aspis aspis*                     | (LINNAEUS, 1758)                                                     |                                              |
 |&#9724;| *Vipera aspis atra*                      | MEISNER, 1820                                                        | Not a taxon (REF)                            |
