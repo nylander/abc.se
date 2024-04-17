@@ -1,4 +1,5 @@
 *.swp
+*.cpy
 Old/
 lists/README.md
 lists/count.sh
